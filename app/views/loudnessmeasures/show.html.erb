@@ -1,0 +1,20 @@
+<p>
+  <strong>State:</strong>
+  <%= @loudnessmeasure.state %>
+</p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @loudnessmeasure.name %>
+</p>
+ 
+<p>
+  <strong>Obs:</strong>
+  <%= @loudnessmeasure.obs %>
+</p>
+
+<strong>Original audio file:</strong>
+  <%= @loudnessmeasure.originalfilename %>
+</p>
+
+<%= link_to 'See loudness measures state', loudnessmeasures_path %>

@@ -1,0 +1,31 @@
+<%= form_for :loudnessmeasure, url: loudnessmeasures_path do |f| %>
+  <% if @loudnessmeasure.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@loudnessmeasure.errors.count, "error") %> found</h2>
+      <ul>
+       <% @loudnessmeasure.errors.full_messages.each do |msg| %>
+         <li><%= msg %></li>
+       <% end %>
+      </ul>
+    </div>
+  <% end %> <p>
+    <%= f.label 'Name' %><br>
+    <%= f.text_field :name %>
+  </p>
+ 
+  <p>
+    <%= f.label 'Obs' %><br>
+    <%= f.text_area :obs %>
+  </p>
+ 
+  <p>
+    <%= f.label 'Media File' %><br>
+    <%= f.file_field :originalfilename %>
+  </p>
+
+  <p>
+    <%= f.label 'Add loudness measure to queue' %><br>
+    <%= f.submit %>
+  </p>
+<% end %>
+<%= link_to 'Back', loudnessmeasures_path %>

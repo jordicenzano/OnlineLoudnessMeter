@@ -1,0 +1,24 @@
+<h1>Listing loudness measures</h1>
+ 
+<table>
+  <tr>
+    <th>State</th>
+    <th>Name</th>
+    <th>Obs</th>
+    <th>Filename</th>
+    <th>Loudness I [LUFS]</th>
+    <th>Loudness LRA [LU]</th>
+  </tr>
+ 
+  <% @loudnessmeasures.each do |loudnessmeasure| %>
+    <tr>
+      <td><%= loudnessmeasure.state %></td>
+      <td><%= loudnessmeasure.name %></td>
+      <td><%= loudnessmeasure.obs %></td>
+      <td><%= loudnessmeasure.originalfilename %></td>
+      <td><%= loudnessmeasure.loudnessi %></td>
+      <td><%= loudnessmeasure.loudnesslra %></td>
+      </tr>
+  <% end %>
+</table>
+<%= link_to 'New measure', new_loudnessmeasure_path %>
