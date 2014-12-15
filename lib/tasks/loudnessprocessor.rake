@@ -63,7 +63,7 @@ namespace :onlineloudnesscalc do
 	    		loudnessfilename = loudnessmeasure.localfilename + ".txt"
 
 				cmd = "ffmpeg -nostats -i #{loudnessmeasure.localfilename} -filter_complex ebur128 -f null - 2> #{loudnessfilename}"
-	  			puts "Run command: #{cmd}"
+	  			puts "Computing loudness. Run command: #{cmd}"
 
 	  			ret = `#{cmd}`
 
@@ -74,10 +74,15 @@ namespace :onlineloudnesscalc do
 	  				#Get LRA val file
 					lra = finlrafromresult res
 	  		
+	  				puts "Loudness resukts: I = #{i} LUFS, LRA = #{lra} LU"
+
 					loudnessmeasure.updateloudnessvalues i,lra
 	  				loudnessmeasure.updatestate 'finished'
 
+					puts "DB updated"
+
 	  				#Clean up
+	  				puts "Cleaning media up"
 	  				File.delete (loudnessmeasure.localfilename)
 	  			else
 	  				puts "There is no loudness results file #{loudnessfilename}"

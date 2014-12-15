@@ -26,7 +26,13 @@ class LoudnessMeasure < ActiveRecord::Base
 
 		localfilepathupload = Rails.root.join('public', 'uploads', '.' + localfilename)
 		localfilepathfinal = Rails.root.join('public', 'uploads', localfilename)
-	
+
+		#Create uploads dir if not extsts
+		dirname = File.dirname(localfilepathfinal)
+		unless File.directory?(dirname)
+  			FileUtils.mkdir(dirname)
+		end
+
 		logger.debug "Start upload: from #{uploadfile} to #{localfilepathfinal}"
 	
 		File.open(localfilepathupload, 'wb') do |file|
