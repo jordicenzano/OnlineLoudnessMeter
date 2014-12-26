@@ -1,7 +1,7 @@
 source 'https://rubygems.org'
 
 #Set secrets en .env files
-gem 'dotenv-rails', :groups => [:produciton]
+gem 'dotenv-rails', :groups => [:production]
 
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.8'
