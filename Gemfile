@@ -1,8 +1,5 @@
 source 'https://rubygems.org'
 
-#Set secrets en .env files
-gem 'dotenv-rails', :groups => [:production]
-
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails'
 gem 'rails', '4.1.8'
 # Use sqlite3 as the database for Active Record
