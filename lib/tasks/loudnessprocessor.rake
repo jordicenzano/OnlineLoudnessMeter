@@ -71,7 +71,7 @@ namespace :onlineloudnesscalc do
 	  				#Get loudness values fom ffmpeg result file
 	  				res = `tail -n 10 #{loudnessfilename}`
 	  				
-	  				if res.present?	
+	  				begin
 	  					i = finifromresult res
 	  					#Get LRA val file
 						lra = finlrafromresult res
@@ -86,8 +86,8 @@ namespace :onlineloudnesscalc do
 	  					#Clean up
 	  					puts "Cleaning media up"
 	  					File.delete (loudnessmeasure.localfilename)
-	  				else
-	  					puts "There is no loudness data in the results file #{loudnessfilename}"
+	  				rescue
+	  					puts "Error computing loudness data in the results file #{loudnessfilename}"
 	  					loudnessmeasure.updatestate 'error'	
 	  				end
 	  			else
