@@ -68,22 +68,28 @@ namespace :onlineloudnesscalc do
 	  			ret = `#{cmd}`
 
 	  			if File.exist?(loudnessfilename)
-	  				#Get I val file
+	  				#Get loudness values fom ffmpeg result file
 	  				res = `tail -n 10 #{loudnessfilename}`
-	  				i = finifromresult res
-	  				#Get LRA val file
-					lra = finlrafromresult res
+	  				
+	  				if res.present?	
+	  					i = finifromresult res
+	  					#Get LRA val file
+						lra = finlrafromresult res
 	  		
-	  				puts "Loudness resukts: I = #{i} LUFS, LRA = #{lra} LU"
+	  					puts "Loudness resukts: I = #{i} LUFS, LRA = #{lra} LU"
 
-					loudnessmeasure.updateloudnessvalues i,lra
-	  				loudnessmeasure.updatestate 'finished'
+						loudnessmeasure.updateloudnessvalues i,lra
+	  					loudnessmeasure.updatestate 'finished'
 
-					puts "DB updated"
+						puts "DB updated"
 
-	  				#Clean up
-	  				puts "Cleaning media up"
-	  				File.delete (loudnessmeasure.localfilename)
+	  					#Clean up
+	  					puts "Cleaning media up"
+	  					File.delete (loudnessmeasure.localfilename)
+	  				else
+	  					puts "There is no loudness data in the results file #{loudnessfilename}"
+	  					loudnessmeasure.updatestate 'error'	
+	  				end
 	  			else
 	  				puts "There is no loudness results file #{loudnessfilename}"
 	  				loudnessmeasure.updatestate 'error'
