@@ -23,6 +23,6 @@ test:
 production:
   adapter: mysql
   database: onlineloudnessmeter
-  username: <%= Rails.application.secrets[:database][:username] %>
-  password: <%= Rails.application.secrets[:database][:password] %>
+  username: ENV["MY_SQL_USER"]
+  password: ENV["MY_SQL_PASS"]
   host: localhost
