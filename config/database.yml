@@ -22,7 +22,7 @@ test:
 
 production:
   adapter: mysql
-  database: library_production
+  database: onlineloudnessmeter
   username: root
   password: ENV["MY_SQL_ROOT_PASS"]
   host: localhost
