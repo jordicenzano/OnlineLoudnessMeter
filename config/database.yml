@@ -23,6 +23,6 @@ test:
 production:
   adapter: mysql
   database: onlineloudnessmeter
-  username: root
-  password: ENV["MY_SQL_ROOT_PASS"]
+  username: <%= ENV["MY_SQL_USER"] %>
+  password: <%= ENV["MY_SQL_PASS"] %>
   host: localhost
