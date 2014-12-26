@@ -23,6 +23,6 @@ test:
 production:
   adapter: mysql
   database: onlineloudnessmeter
-  username: <%= ENV["MY_SQL_USER"] %>
-  password: <%= ENV["MY_SQL_PASS"] %>
+  username: <%= JSON.parse(open('/home/deploy/dbconfig.json').read)['user'] %>
+  password: <%= JSON.parse(open('/home/deploy/dbconfig.json').read)['pass'] %>
   host: localhost
