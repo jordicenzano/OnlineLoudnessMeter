@@ -23,6 +23,6 @@ test:
 production:
   adapter: mysql
   database: onlineloudnessmeter
-  username: <%= JSON.parse(open('/home/deploy/dbconfig.json').read)['user'] %>
-  password: <%= JSON.parse(open('/home/deploy/dbconfig.json').read)['pass'] %>
+  username: <%= begin JSON.parse(open('/home/deploy/dbconfig.json').read)['user'] rescue "" end%>
+  password: <%= begin JSON.parse(open('/home/deploy/dbconfig.json').read)['pass'] rescue "" end%>
   host: localhost
