@@ -28,6 +28,9 @@ gem 'spring',        group: :development
 #db 
 gem 'mysql'
 
+#User athentication
+gem 'devise'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 
