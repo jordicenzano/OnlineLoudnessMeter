@@ -102,7 +102,7 @@ namespace :onlineloudnesscalc do
 	
 		end
 
-    	puts "Exit proc thread id:#{Thread.current.object_id}}"
+    	puts "Exit proc thread id:#{Thread.current.object_id}"
 
 	end
 end
