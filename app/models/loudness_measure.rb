@@ -1,4 +1,7 @@
 class LoudnessMeasure < ActiveRecord::Base
+
+	belongs_to :user 
+
 	validates :state, presence: true
 	validates :name, presence: true, length: { minimum: 5 }
 	validates :originalfilename, presence: true

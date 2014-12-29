@@ -22,11 +22,13 @@ class LoudnessmeasuresController < ApplicationController
  	end
 	
 	def show
-  		@loudnessmeasure = LoudnessMeasure.find(params[:id])
-	end
+		#TODO: improve (if null?)
+  		@loudnessmeasure = LoudnessMeasure.where("id = #{params[:id]} AND user_id = #{current_user.id}").first
+ 	end
 
 	def index
-  		@loudnessmeasures = LoudnessMeasure.all
+		#TODO: improve
+  		@loudnessmeasures = LoudnessMeasure.where("user_id = #{current_user.id}")
 	end
 
 private 
@@ -34,7 +36,7 @@ private
  	def loudnessmeasure_params_to_db
     	params.require(:loudnessmeasure).permit(:name, :obs, :originalfilename)	
 
-  		ret = {:state => 'uploading', :name => params[:loudnessmeasure][:name], :obs => params[:loudnessmeasure][:obs] }
+  		ret = {:state => 'uploading', :name => params[:loudnessmeasure][:name], :obs => params[:loudnessmeasure][:obs], :user_id => current_user.id}
   		if loudnessmeasure_params_uploadfile
   			ret[:originalfilename] = loudnessmeasure_params_uploadfile.original_filename
   		end
