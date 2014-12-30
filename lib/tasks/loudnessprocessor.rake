@@ -1,60 +1,13 @@
 namespace :onlineloudnesscalc do
 	desc "Compute loudness of onlineloudnesscalc app"
   	task calcloudness: :environment do
+    	
     	puts "Start calc loudness task"
 
-    	#Start threads
-    	numofprocthreads = 1
-    	thread = Array.new (numofprocthreads)
-
-    	#Create exit file
-    	exitfilename = 'exitfile'
-    	createexitfile exitfilename
-    	
-		#Create threads
-		i = 0
-		while i < numofprocthreads do
-			thread[i] = Thread.new(exitfilename){|pexitfilename| procthread(pexitfilename)}
-   			i +=1
-		end
-
-		#Wait threads
-		i = 0
-		while i < numofprocthreads do
-			thread[i].join
-   			i +=1
-		end
-
-    	puts "End calc loudness task" 
-  	end
-
-  	def createexitfile (filename)
-  		exitfile = Rails.root.join(filename)
-
-		if File.exist?(exitfile)
-			File.delete(exitfile)
-		end
-    	File.open(exitfile, "w+") do |f|
-  			f.close
-		end
-  	end
-
-  	def finifromresult (res)
-  		res.scan(/.I:[ ]+[-,0-9]+/).last.scan(/[-,0-9]+/).first.to_f
-  	end
-
-  	def finlrafromresult (res)
-		res.scan(/.LRA:[ ]+[-,0-9]+/).last.scan(/[-,0-9]+/).first.to_f
-  	  end
-
-  	def procthread (exitfile)
-
-		puts "Enter proc thread id:#{Thread.current.object_id}"
-
-		dteini = File.mtime(exitfile)
+    	dteini = File.mtime(exitfile)
 		dtenow = dteini
 
-		while (dtenow == dteini)
+		while (!Signal.trap("TERM"))
 			loudnessmeasure = LoudnessMeasure.find_by state: 'queued'
 
 			if (loudnessmeasure.present?)
@@ -96,13 +49,19 @@ namespace :onlineloudnesscalc do
 	  			end
 	  		else
 	  			sleep (1.0)
-			end
-
-			dtenow = File.mtime(exitfile)
-	
+			end	
 		end
 
-    	puts "Exit proc thread id:#{Thread.current.object_id}"
+    	puts "End calc loudness task" 
+  	end
 
-	end
+private 
+
+  	def finifromresult (res)
+  		res.scan(/.I:[ ]+[-,0-9]+/).last.scan(/[-,0-9]+/).first.to_f
+  	end
+
+  	def finlrafromresult (res)
+		res.scan(/.LRA:[ ]+[-,0-9]+/).last.scan(/[-,0-9]+/).first.to_f
+  	end
 end
