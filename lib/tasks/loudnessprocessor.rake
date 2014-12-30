@@ -4,9 +4,6 @@ namespace :onlineloudnesscalc do
     	
     	puts "Start calc loudness task"
 
-    	dteini = File.mtime(exitfile)
-		dtenow = dteini
-
 		while (!Signal.trap("TERM"))
 			loudnessmeasure = LoudnessMeasure.find_by state: 'queued'
 
