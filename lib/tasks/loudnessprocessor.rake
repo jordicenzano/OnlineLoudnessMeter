@@ -1,9 +1,12 @@
 namespace :onlineloudnesscalc do
 	desc "Compute loudness of onlineloudnesscalc app"
   	task calcloudness: :environment do
+
+			@bexit = false
+
 			log "Start calc loudness task"
 
-			#while (true)
+			while (@bexit == false)
 				loudnessmeasure = LoudnessMeasure.find_by(state: 'queued')
 
 				if (loudnessmeasure.present?)
@@ -47,7 +50,11 @@ namespace :onlineloudnesscalc do
 	  		else
 	  			sleep (1.0)
 				end
-			#end
+
+				trap("INT"){@bexit = true}
+				trap("TERM"){@bexit = true}
+
+			end
 
 			log "End calc loudness task"
 
