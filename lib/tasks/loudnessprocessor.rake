@@ -4,7 +4,7 @@ namespace :onlineloudnesscalc do
 			log "Start calc loudness task"
 
 			#while (true)
-				loudnessmeasure = LoudnessMeasure.find_by state: 'queued'
+				loudnessmeasure = LoudnessMeasure.find_by(state: 'queued')
 
 				if (loudnessmeasure.present?)
 					log "Find file: #{loudnessmeasure.name}"
@@ -64,6 +64,6 @@ private
   	end
 
   	def log (str)
-  		puts "#{DateTime.now.strftime("%Y-%m-%d %H:%M:%s.%N")} - #{str}"
+  		puts "#{DateTime.now.strftime("%Y-%m-%d %H:%M:%S.%N")} - #{str}"
   	end
 end
