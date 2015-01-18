@@ -1,0 +1,1 @@
+rvm --create use $(cat .ruby-version)@$(cat .ruby-gemset)

@@ -1,56 +1,57 @@
 namespace :onlineloudnesscalc do
 	desc "Compute loudness of onlineloudnesscalc app"
   	task calcloudness: :environment do
-    	
-    	puts "Start calc loudness task"
+			log "Start calc loudness task"
 
-		while (!Signal.trap("TERM"))
-			loudnessmeasure = LoudnessMeasure.find_by state: 'queued'
+			#while (true)
+				loudnessmeasure = LoudnessMeasure.find_by state: 'queued'
 
-			if (loudnessmeasure.present?)
-	  		  	puts "Find file: #{loudnessmeasure.name}"
+				if (loudnessmeasure.present?)
+					log "Find file: #{loudnessmeasure.name}"
 
 	    		loudnessfilename = loudnessmeasure.localfilename + ".txt"
 
-				cmd = "ffmpeg -nostats -i #{loudnessmeasure.localfilename} -filter_complex ebur128 -f null - 2> #{loudnessfilename}"
-	  			puts "Computing loudness. Run command: #{cmd}"
+					cmd = "ffmpeg -nostats -i #{loudnessmeasure.localfilename} -filter_complex ebur128 -f null - 2> #{loudnessfilename}"
+
+					log "Computing loudness. Run command: #{cmd}"
 
 	  			ret = `#{cmd}`
 
-	  			if File.exist?(loudnessfilename)
+					if File.exist?(loudnessfilename)
 	  				#Get loudness values fom ffmpeg result file
 	  				res = `tail -n 10 #{loudnessfilename}`
 	  				
 	  				begin
 	  					i = finifromresult res
-	  					#Get LRA val file
-						lra = finlrafromresult res
-	  		
-	  					puts "Loudness resukts: I = #{i} LUFS, LRA = #{lra} LU"
 
-						loudnessmeasure.updateloudnessvalues i,lra
+	  					#Get LRA val file
+							lra = finlrafromresult res
+							log "Loudness resukts: I = #{i} LUFS, LRA = #{lra} LU"
+
+							loudnessmeasure.updateloudnessvalues i,lra
 	  					loudnessmeasure.updatestate 'finished'
 
-						puts "DB updated"
+							log "DB updated"
 
 	  					#Clean up
-	  					puts "Cleaning media up"
+	  					log "Cleaning media up"
 	  					File.delete (loudnessmeasure.localfilename)
 	  				rescue
-	  					puts "Error computing loudness data in the results file #{loudnessfilename}"
+	  					log "Error computing loudness data in the results file #{loudnessfilename}"
 	  					loudnessmeasure.updatestate 'error'	
 	  				end
 	  			else
-	  				puts "There is no loudness results file #{loudnessfilename}"
+	  				log "There is no loudness results file #{loudnessfilename}"
 	  				loudnessmeasure.updatestate 'error'
 	  			end
 	  		else
 	  			sleep (1.0)
-			end	
-		end
+				end
+			#end
 
-    	puts "End calc loudness task" 
-  	end
+			log "End calc loudness task"
+
+		end
 
 private 
 
@@ -60,5 +61,9 @@ private
 
   	def finlrafromresult (res)
 		res.scan(/.LRA:[ ]+[-,0-9]+/).last.scan(/[-,0-9]+/).first.to_f
+  	end
+
+  	def log (str)
+  		puts "#{DateTime.now.strftime("%Y-%m-%d %H:%M:%s.%N")} - #{str}"
   	end
 end
