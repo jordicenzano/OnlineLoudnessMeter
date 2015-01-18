@@ -23,7 +23,7 @@ namespace :onlineloudnesscalc do
 					if File.exist?(loudnessfilename)
 	  				#Get loudness values fom ffmpeg result file
 	  				res = `tail -n 10 #{loudnessfilename}`
-	  				
+
 	  				begin
 	  					i = finifromresult res
 
@@ -41,7 +41,7 @@ namespace :onlineloudnesscalc do
 	  					File.delete (loudnessmeasure.localfilename)
 	  				rescue
 	  					log "Error computing loudness data in the results file #{loudnessfilename}"
-	  					loudnessmeasure.updatestate 'error'	
+	  					loudnessmeasure.updatestate 'error'
 	  				end
 	  			else
 	  				log "There is no loudness results file #{loudnessfilename}"
@@ -49,6 +49,7 @@ namespace :onlineloudnesscalc do
 	  			end
 	  		else
 	  			sleep (1.0)
+					log "Wait"
 				end
 
 				trap("INT"){@bexit = true}
@@ -72,5 +73,6 @@ private
 
   	def log (str)
   		puts "#{DateTime.now.strftime("%Y-%m-%d %H:%M:%S.%N")} - #{str}"
+			STDOUT.flush
   	end
 end
