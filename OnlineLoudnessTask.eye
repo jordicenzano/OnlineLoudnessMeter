@@ -19,7 +19,7 @@ if (!Dir.exists?(pids_path))
 end
 
 Eye.application 'delayed_job' do
-  #env 'RAILS_ENV' => 'production'
+  env 'RAILS_ENV' => 'production'
   working_dir cwd
   stop_on_delete true
 

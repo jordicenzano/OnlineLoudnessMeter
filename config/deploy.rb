@@ -47,22 +47,22 @@ namespace :deploy do
   desc 'Stop worker processes (eye)'
   task :stopworker do
     on roles(:app), in: :sequence, wait: 5 do
-      execute "export PATH='$PATH:$HOME/.rvm/bin'; source ~/.rvm/scripts/rvm; cd #{deploy_to}/current; ~/.rvm/bin/rvm use ruby-2.1.3; eye stop delayed_job; true"
-      execute "cd #{deploy_to}/current; ./bin/eye quit; true"
+      execute "eye stop delayed_job; true"
+      execute "eye quit; true"
     end
   end
 
   desc 'Start worker processes (eye)'
   task :startworker do
     on roles(:app), in: :sequence, wait: 5 do
-      execute "cd #{deploy_to}/current; eye load #{release_path.join('OnlineLoudnessTask.eye')}"
-      execute "cd #{deploy_to}/current; eye start delayed_job"
+      execute "eye load #{release_path.join('OnlineLoudnessTask.eye')}"
+      execute "eye start delayed_job"
     end
   end
 
   after :publishing, 'deploy:restart'
   after :finishing, 'deploy:cleanup'
 
-  #before :starting, 'deploy:stopworker'
-  #after :finishing, 'deploy:startworker'
+  before :starting, 'deploy:stopworker'
+  after :finishing, 'deploy:startworker'
 end
