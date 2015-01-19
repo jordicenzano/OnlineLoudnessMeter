@@ -63,6 +63,6 @@ namespace :deploy do
   after :publishing, 'deploy:restart'
   after :finishing, 'deploy:cleanup'
 
-  before :starting, 'deploy:stopworker'
-  after :finishing, 'deploy:startworker'
+  #before :starting, 'deploy:stopworker'
+  #after :finishing, 'deploy:startworker'
 end
