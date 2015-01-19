@@ -25,7 +25,7 @@ Eye.application 'delayed_job' do
 
   stdall 'trash.log' # stdout,err logs for processes by default
 
-  trigger :flapping, times: 10, within: 1.minute, retry_in: 10.minutes
+  #trigger :flapping, times: 10, within: 1.minute, retry_in: 10.minutes
   check :cpu, every: 10.seconds, below: 100, times: 3 # global check for all processes
 
   group 'dj' do

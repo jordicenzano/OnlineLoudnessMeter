@@ -44,7 +44,25 @@ namespace :deploy do
     end
   end
 
+  desc 'Stop worker processes (eye)'
+  task :stopworker do
+    on roles(:app), in: :sequence, wait: 5 do
+      execute "eye stop delayed_job; true"
+      execute "eye quit; true"
+    end
+  end
+
+  desc 'Start worker processes (eye)'
+  task :startworker do
+    on roles(:app), in: :sequence, wait: 5 do
+      execute "eye load #{release_path.join('OnlineLoudnessTask.eye')}"
+      execute "eye start delayed_job"
+    end
+  end
+
   after :publishing, 'deploy:restart'
   after :finishing, 'deploy:cleanup'
 
+  before :starting, 'deploy:stopworker'
+  after :finishing, 'deploy:startworker'
 end
