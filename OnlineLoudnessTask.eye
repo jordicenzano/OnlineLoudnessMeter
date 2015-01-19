@@ -8,9 +8,25 @@ else
   1
 end
 
+#Create PIDS dir if does not exists
+tmp_path = File.join(cwd, %w{ tmp } )
+if (!Dir.exists?(tmp_path))
+  Dir.mkdir(tmp_path)
+end
+pids_path = File.join(cwd, %w{ tmp pids } )
+if (!Dir.exists?(pids_path))
+  Dir.mkdir(pids_path)
+end
+
 Eye.application 'delayed_job' do
+  #env 'RAILS_ENV' => 'production'
   working_dir cwd
   stop_on_delete true
+
+  stdall 'trash.log' # stdout,err logs for processes by default
+
+  trigger :flapping, times: 10, within: 1.minute, retry_in: 10.minutes
+  check :cpu, every: 10.seconds, below: 100, times: 3 # global check for all processes
 
   group 'dj' do
     chain grace: 10.seconds
