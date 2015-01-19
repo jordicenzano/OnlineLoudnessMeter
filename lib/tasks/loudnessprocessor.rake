@@ -39,8 +39,8 @@ namespace :onlineloudnesscalc do
 	  					#Clean up
 	  					log "Cleaning media up"
 	  					File.delete (loudnessmeasure.localfilename)
-	  				rescue
-	  					log "Error computing loudness data in the results file #{loudnessfilename}"
+	  				rescue Exception => e
+	  					log "Error computing loudness data #{e.message}, #{e.backtrace}"
 	  					loudnessmeasure.updatestate 'error'
 	  				end
 	  			else
@@ -49,7 +49,7 @@ namespace :onlineloudnesscalc do
 	  			end
 	  		else
 	  			sleep (1.0)
-					log "Wait"
+					#log "Wait"
 				end
 
 				trap("INT"){@bexit = true}
