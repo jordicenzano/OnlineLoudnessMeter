@@ -28,9 +28,6 @@ gem 'spring',        group: :development
 #db 
 gem 'mysql'
 
-#eye
-gem 'eye'
-
 #User athentication
 gem 'devise'
 
