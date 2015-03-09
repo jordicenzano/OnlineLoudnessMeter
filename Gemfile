@@ -31,6 +31,12 @@ gem 'mysql'
 #User athentication
 gem 'devise'
 
+#s3 uploads
+gem 's3_direct_upload'
+
+#s3downloads
+gem 'fog'
+
 # Use ActiveModel has_secure_password
 # gem 'bcrypt', '~> 3.1.7'
 

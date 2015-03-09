@@ -3,8 +3,6 @@ class LoudnessmeasuresController < ApplicationController
 	@loudnessmeasure = nil
 	@loudnessmeasures = nil
 
-	@uploadthread = nil
-
 	def new
 		@loudnessmeasure = LoudnessMeasure.new()
 	end
@@ -14,8 +12,6 @@ class LoudnessmeasuresController < ApplicationController
  
   		if @loudnessmeasure.save
 			render :action => 'show', :id => @loudnessmeasure.id
-
-			@loudnessmeasure.upload loudnessmeasure_params_uploadfile
 		else
 			render 'new'
 		end 
@@ -34,18 +30,9 @@ class LoudnessmeasuresController < ApplicationController
 private 
 
  	def loudnessmeasure_params_to_db
-    	params.require(:loudnessmeasure).permit(:name, :obs, :originalfilename)	
+		params.require(:loudnessmeasure).permit(:name, :obs, :url)
 
-  		ret = {:state => 'uploading', :name => params[:loudnessmeasure][:name], :obs => params[:loudnessmeasure][:obs], :user_id => current_user.id}
-  		if loudnessmeasure_params_uploadfile
-  			ret[:originalfilename] = loudnessmeasure_params_uploadfile.original_filename
-  		end
-
-  		ret
+		{:state => 'queued', :name => params[:loudnessmeasure][:name], :obs => params[:loudnessmeasure][:obs], :url => params[:loudnessmeasure][:url], :user_id => current_user.id}
 	end
-
-  	def loudnessmeasure_params_uploadfile
-  		params[:loudnessmeasure][:originalfilename]
-  	end
 
 end

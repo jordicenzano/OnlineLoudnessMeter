@@ -9,53 +9,80 @@ namespace :onlineloudnesscalc do
       while (@bexit == false)
         loudnessmeasure = LoudnessMeasure.getloudnessmeasuresqueuedtoprocess
 
-        if (loudnessmeasure.present?)
-          log "Find file: #{loudnessmeasure.name}"
+        #TODO: Remember to recreate the DB in server machine!!!!!!!!!!!!
+    
+        begin
 
-          loudnessfilename = loudnessmeasure.localfilename + ".txt"
+          if (loudnessmeasure.present?)
+            log "Found file: #{loudnessmeasure.name}"
 
-          cmd = "ffmpeg -nostats -i #{loudnessmeasure.localfilename} -filter_complex ebur128 -f null - 2> #{loudnessfilename}"
+            #Load config data (makes possible to change config params on the fly)
+            #TODO hide config
+            localpath = "public"
+            #User loudnessdownloader
+            s3key = CONFIG_ONLINELOUDNESS['loudnessdownloader']['key']
+            s3secret = CONFIG_ONLINELOUDNESS['loudnessdownloader']['secret']
+            s3defaultregion = CONFIG_ONLINELOUDNESS['loudnessdownloader']['region']
 
-          log "Computing loudness. Run command: #{cmd}"
+            #generate local filenames
+            localmediafilename = File.join(localpath,"#{SecureRandom.uuid}#{File.extname(loudnessmeasure.url)}")
+            localresultfilename = File.join(localpath,"#{SecureRandom.uuid}.txt")
+            #S3 Download
+            log "Downloading from #{loudnessmeasure.url_plain} to #{localmediafilename}"
+            loudnessmeasure.downloadfroms3 localmediafilename, s3key, s3secret, s3defaultregion
 
-          #Execute command
-          ret = `#{cmd}`
+            #Calculate loudness
+            #TODO: Change ffmper per http://jordicenzano.name/front-test/tv-loudness-metering-072013/command-line-loudness-meter/
+            cmd = "ffmpeg -nostats -i #{localmediafilename} -filter_complex ebur128 -f null - 2> #{localresultfilename}"
+            log "Computing loudness. Run command: #{cmd}"
 
-          if File.exist?(loudnessfilename)
-            #Get loudness values fom ffmpeg result file
-            res = `tail -n 10 #{loudnessfilename}`
+            #Execute command
+            ret = `#{cmd}`
 
-            begin
-              i = finifromresult res
-
-              #Get LRA val file
-              lra = finlrafromresult res
-              log "Loudness resukts: I = #{i} LUFS, LRA = #{lra} LU"
-
-              loudnessmeasure.updateloudnessvalues i,lra
-              loudnessmeasure.updatestate 'finished'
-
-              log "DB updated"
-
-              #Clean up
-              log "Cleaning media up"
-              File.delete (loudnessmeasure.localfilename)
-            rescue Exception => e
-              log "Error computing loudness data Error:#{e.message}, #{e.backtrace}"
-              loudnessmeasure.updatestate 'error'
+            if !File.exist?(localresultfilename)
+              raise "No loudness results file found in: #{localresultfilename}"
             end
+
+            #Get loudness values fom ffmpeg result file
+            res = `tail -n 10 #{localresultfilename}`
+            #Get i value from res
+            i = finifromresult res
+            #Get LRA val from res
+            lra = finlrafromresult res
+
+            log "Loudness results: I = #{i} LUFS, LRA = #{lra} LU"
+
+            #Update result in DB
+            loudnessmeasure.updateloudnessvalues i,lra
+            #Update state in DB
+            loudnessmeasure.updatestate 'finished'
+
+            log "DB updated"
+
           else
-            log "There is no loudness results file #{loudnessfilename}"
-            loudnessmeasure.updatestate 'error'
+            #No measure to calc
+            #log "There is no loudness measure to calc"
+            sleep (2.0)
           end
-        else
-          sleep (1.0)
-          #log "Wait"
+
+        rescue Exception => e
+              loudnessmeasure.updatestate 'error'
+              log "Error computing loudness data Error: #{e.message}, #{e.backtrace}"
+        ensure
+          #Clean up (we won't delete file from s3, it will expire. And we'll be able to retry)
+          if localmediafilename.present?
+            log "Cleaning media up"
+            if File.exist?(localmediafilename)
+              File.delete (localmediafilename)
+              log "Deleted: #{localmediafilename}"
+            end
+          end
         end
+
+        sleep (0.1)
 
         trap("INT"){@bexit = true}
         trap("TERM"){@bexit = true}
-
       end
 
       log "End calc loudness task"
@@ -76,4 +103,4 @@ private
       puts "#{DateTime.now.strftime("%Y-%m-%d %H:%M:%S.%N")} - #{str}"
       STDOUT.flush
     end
-end
+  end

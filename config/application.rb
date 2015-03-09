@@ -6,6 +6,14 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
+if Rails.env.production?
+    filecfg =  File.join("/home/deploy/s3config.json")
+else
+    filecfg =  File.join(".s3config.json")
+end
+
+CONFIG_ONLINELOUDNESS = JSON.parse(open(filecfg).read)
+
 module Onlineloudnesscalc
   class Application < Rails::Application
     # Settings in config/environments/* take precedence over those specified here.
