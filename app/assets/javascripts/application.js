@@ -13,4 +13,29 @@
 //= require jquery
 //= require jquery_ujs
 //= require turbolinks
+//= require s3_direct_upload
 //= require_tree .
+
+$(function() {
+	$('#s3_uploader').S3Uploader({
+		remove_completed_progress_bar: false,
+		progress_bar_target: $('#uploads_container')
+	});
+
+	$('#s3_uploader').bind('s3_uploads_start', function(e, content) {
+		$('#file').attr('disabled', true);
+		$('#file').val("");
+		console.log ("File disabled");
+	});
+
+	$('#s3_uploader').bind('s3_upload_failed', function(e, content) {
+		return alert(content.filename + ' failed to upload. Error: ' + content.error_thrown);
+	});
+
+	$('#s3_uploader').bind('s3_upload_complete', function(e, content) {
+		$('#button').attr('disabled', true);
+		$('#loudnessmeasure_url').val(content.url);
+
+		console.log ("Uploaded: " + content.url + " - " + $('#loudnessmeasure_url').val());
+	});
+});

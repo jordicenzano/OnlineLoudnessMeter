@@ -1,4 +1,4 @@
-<%= form_for :loudnessmeasure, url: loudnessmeasures_path do |f| %>
+<%= form_for :loudnessmeasure, url: loudnessmeasures_path , html: { id: "loudnessNew" } do |f| %>
   <% if @loudnessmeasure.errors.any? %>
     <div id="error_explanation">
       <h2><%= pluralize(@loudnessmeasure.errors.count, "error") %> found</h2>
@@ -17,15 +17,57 @@
     <%= f.label 'Obs' %><br>
     <%= f.text_area :obs %>
   </p>
- 
-  <p>
-    <%= f.label 'Media File' %><br>
-    <%= f.file_field :originalfilename %>
-  </p>
+
+  <%= f.hidden_field :url  %>
+
+ <script type="text/javascript">
+    function check_params_and_show_error() {
+      var strname = $('#loudnessmeasure_name').val();
+      var strurl = $('#loudnessmeasure_url').val();
+      var ret = false;
+
+      if ((strname.trim() == "") && (strurl.trim() == ""))
+        alert ("You have to enter a valid name and upload a media file first");
+      else if ((strname.trim() == "") && (strurl.trim() != ""))
+        alert ("You have to enter a valid name");
+      else if ((strname.trim() != "") && (strurl.trim() == ""))
+        alert ("You have to upload a media file first");
+      else
+        ret = true;
+
+      return ret;
+    }
+  </script>
+<% end %>
+
+<%= s3_uploader_form id: "s3_uploader", max_file_size: 100.megabytes do %>
 
   <p>
-    <%= f.label 'Add loudness measure to queue' %><br>
-    <%= f.submit %>
+    <%= file_field_tag :file, multiple: false %>
   </p>
+
+  <script type="text/javascript">
+
+    $(document).on("click","#loudnessmeasures_visible_submit",function(){
+      if (check_params_and_show_error() == true)
+      {
+        $('#loudnessNew').submit();
+      }
+    });
+  </script>
+
+  <div id="uploads_container"></div>
+  <script id="template-upload" type="text/x-tmpl">
+    <div id="upload_{%=o.unique_id%}" class="upload">
+      <h5>{%=o.name%}</h5>
+      <div class="progress progress-striped active">
+        <div class="bar" style="width: 0%"></div>
+      </div>
+    </div>
+  </script>
+
 <% end %>
-<%= link_to 'Back', loudnessmeasures_path %>
+
+<p id="loudnessmeasures_visible_submit">
+  <%= button_tag "Add to loudness measure queue", type: 'button' %>
+</p>
